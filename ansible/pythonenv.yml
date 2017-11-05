@@ -1,0 +1,102 @@
+---
+- hosts: webservers
+  become: yes
+  become_user: root
+  user: vagrant
+
+  environment: 
+      PYENV_ROOT: "/usr/local/pyenv"
+      PYTHONPATH: "/usr/local/pyenv/shims/python"
+      PATH: "/usr/local/pyenv/shims:/usr/local/pyenv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:root/bin"
+
+  tasks:
+    - name: Only run "update_cache=yes" if the last one is more than 3600 seconds ago
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: install packages gcc  
+      become: yes
+      apt: name=gcc
+
+    - name: install packages make  
+      become: yes
+      apt: name=make
+
+    - name: install packages openssl  
+      become: yes
+      apt: name=openssl
+
+    - name: install packages libreadline-dev  
+      become: yes          
+      apt: name=libreadline-dev install_recommends=yes autoremove=yes
+
+    - name: install packages libsqlite3-dev  
+      become: yes          
+      apt: name=libsqlite3-dev install_recommends=yes autoremove=yes
+
+    - name: install packages libbz2-dev
+      become: yes          
+      apt: name=libbz2-dev install_recommends=yes autoremove=yes
+
+    - name: install packages libssl-dev
+      become: yes
+      apt: name=libssl-dev install_recommends=yes autoremove=yes
+
+    - name: git clone pyenv
+      become: yes
+      git:
+        repo: git://github.com/yyuu/pyenv.git
+        dest: /usr/local/pyenv
+    
+    - name: git clone virtualenv
+      become: yes
+      git:
+        repo: git://github.com/yyuu/pyenv-virtualenv.git
+        dest: /usr/local/pyenv/plugins/virtualenv
+
+    - name: add bash_profile to vagrant
+      file: path=/home/vagrant/.bash_profile state=touch
+
+    - name: add pyenv root PATH to vagrant
+      lineinfile:
+        dest=/home/vagrant/.bash_profile
+        regexp=^export.PYENV_ROOT
+        line="export PYENV_ROOT=/usr/local/pyenv"
+
+    - name: add pyenv PATH to vagrant
+      lineinfile:
+        dest=/home/vagrant/.bash_profile
+        regexp=^export.PATH
+        line="export PATH=/usr/local/pyenv/shims:/usr/local/pyenv/bin:$PATH:"
+
+    - name: source
+      become_user: vagrant
+      shell: source /home/vagrant/.bash_profile
+      args:
+        executable: /bin/bash
+
+    - name: add permission
+      become: yes
+      file: path=/usr/local/pyenv owner=root mode=755 recurse=yes
+
+    - name: check direcoty
+      stat: path=/usr/local/pyenv/versions/3.4.2
+      register: py342
+
+    - name: python3 install
+      become: yes
+      command: /usr/local/pyenv/bin/pyenv install -v 3.4.2
+      when: not py342.stat.exists
+    
+    - name: check directory
+      stat: path=/usr/local/pyenv/versions/2.7.13
+      register: py2713
+
+    - name: python2 install
+      become: yes
+      command: /usr/local/pyenv/bin/pyenv install -v 2.7.13
+      when: not py2713.stat.exists
+
+    - name: set python version
+      command: /usr/local/pyenv/bin/pyenv global 2.7.13

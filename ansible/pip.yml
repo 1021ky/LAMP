@@ -1,0 +1,16 @@
+---
+- hosts: webservers
+  become: yes
+  become_user: root
+  user: vagrant
+
+  tasks:
+    # sample 
+    - pip:
+       name: pyyaml
+       version: 3.12
+       executable: pip-2.7
+    - pip:
+       name: bottle
+       version: 0.11
+       executable: pip-2.7

@@ -1,0 +1,16 @@
+---
+- hosts: all
+  become: yes
+  become_user: root
+  user: vagrant
+
+  vars:
+    hoge: hoge
+  # environment:
+  #   https_proxy: "{{ lookup('env', 'https_proxy') }}"
+
+  tasks:
+
+- import_playbook: ./common.yml
+- import_playbook: ./webservers.yml
+- import_playbook: ./dbs.yml
