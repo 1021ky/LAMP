@@ -43,17 +43,27 @@
       become: yes
       apt: name=libssl-dev install_recommends=yes autoremove=yes
 
+    - name: check git clone is done
+      stat: path=/usr/local/pyenv
+      register: penv
+
     - name: git clone pyenv
       become: yes
       git:
         repo: git://github.com/yyuu/pyenv.git
         dest: /usr/local/pyenv
-    
+      when: not penv.stat.exists
+
+    - name: check git clone is done
+      stat: path=/usr/local/pyenv/plugins/virtualenv
+      register: pvirtualenv
+
     - name: git clone virtualenv
       become: yes
       git:
         repo: git://github.com/yyuu/pyenv-virtualenv.git
         dest: /usr/local/pyenv/plugins/virtualenv
+      when: not pvirtualenv.stat.exists
 
     - name: add bash_profile to vagrant
       file: path=/home/vagrant/.bash_profile state=touch
