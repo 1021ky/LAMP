@@ -37,10 +37,6 @@
 
     - apache2_module: name=wsgi state=present
       notify: restart apache
-
-    # - name: copy apache conf
-    #   copy: src=/vagrant/conf dest=/etc/httpd/conf
-    #   notify: restart apache
          
   handlers:
     - name: restart apache

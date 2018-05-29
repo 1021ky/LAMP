@@ -2,7 +2,7 @@
 # vi: set ft=ruby :
 
 Vagrant.configure("2") do |config|
-  config.vm.box="ubuntu/trusty64"
+  config.vm.box="ubuntu/xenial64"
 
   if Vagrant.has_plugin?("vagrant-proxyconf")
     config.proxy.http     = "http://{proxy_ip}:{proxy_port}"
@@ -10,7 +10,13 @@ Vagrant.configure("2") do |config|
     config.proxy.no_proxy = "localhost,127.0.0.1"
   end
 
+
+  # TODO: try nfs sync for windows
   config.vm.define "web1" do |machine|
+    config.vm.provision "shell", inline: <<-SHELL
+      apt install -yqq python
+    SHELL
+
     machine.vm.hostname = "web1"
     machine.vm.synced_folder "./www", "/var/www/html"
     machine.vm.synced_folder "./log", "/vagrant/log"
@@ -25,6 +31,10 @@ Vagrant.configure("2") do |config|
   end
 
   config.vm.define "db1" do |machine|
+    config.vm.provision "shell", inline: <<-SHELL
+      apt install -yqq python
+    SHELL
+
     machine.vm.hostname = "db1"
     machine.vm.synced_folder "./guest_config_file/webservers/apacheconf", "/vagrant/conf"    
     machine.vm.synced_folder "./guest_config_file/dbs/", "/vagrant/dbs"
@@ -37,6 +47,7 @@ Vagrant.configure("2") do |config|
     end
   end
 
+  # TODO 完成後 , autostart: falseを入れておく。一度だけ立ててprovisioningすればよいので。
   config.vm.define "controller" do |machine|
     machine.vm.network "private_network", ip: "192.168.20.100"
     machine.vm.synced_folder "./guest_config_file/webservers/apacheconf", "/vagrant/conf"    
