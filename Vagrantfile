@@ -36,8 +36,7 @@ Vagrant.configure("2") do |config|
     SHELL
 
     machine.vm.hostname = "db1"
-    machine.vm.synced_folder "./guest_config_file/webservers/apacheconf", "/vagrant/conf"    
-    machine.vm.synced_folder "./guest_config_file/dbs/", "/vagrant/dbs"
+    machine.vm.synced_folder "./guest_config_file/dbs", "/vagrant/dbs"
 
     machine.vm.network :private_network, ip:"192.168.20.11"
     machine.vm.network "forwarded_port", guest: 3606, host: 3606  
