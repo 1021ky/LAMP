@@ -5,7 +5,6 @@
   user: vagrant
 
   tasks:
-    # sample 
     - pip:
        name: pyyaml
        version: 3.12
