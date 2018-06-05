@@ -15,7 +15,7 @@
         update_cache: yes
         cache_valid_time: 3600
 
-    - name: add apt repository for installation python
+    - name: add apt repository for installation mysql
       apt_repository:
         repo: deb http://archive.ubuntu.com/ubuntu trusty universe
         state: present
