@@ -14,7 +14,7 @@ Vagrant.configure("2") do |config|
   # TODO: try nfs sync for windows
   config.vm.define "web1" do |machine|
     machine.vm.provision "shell", inline: <<-SHELL
-      apt install -yqq python
+      apt install -y -qq python
     SHELL
 
     machine.vm.hostname = "web1"
@@ -32,7 +32,7 @@ Vagrant.configure("2") do |config|
 
   config.vm.define "db1" do |machine|
     machine.vm.provision "shell", inline: <<-SHELL
-      apt install -yqq python
+      apt install -y -qq python
     SHELL
 
     machine.vm.hostname = "db1"

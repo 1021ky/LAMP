@@ -5,35 +5,69 @@
   user: vagrant
 
   environment: 
-      PYENV_ROOT: "/usr/local/pyenv"
-      PYTHONPATH: "/usr/local/pyenv/shims/python"
-      PATH: "/usr/local/pyenv/shims:/usr/local/pyenv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:root/bin"
-
+      PATH: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:root/bin"
   tasks:
     - name: Only run "update_cache=yes" if the last one is more than 3600 seconds ago
       apt:
         update_cache: yes
         cache_valid_time: 3600
 
+    - name: add apt repository for installation python
+      apt_repository:
+        repo: ppa:jonathonf/python-2.7
+        state: present
+        update_cache: yes
+
+    - name: install build-essential
+      become: yes
+      apt: name=build-essential
+           state=present
+
+    - name: install checkinstall
+      become: yes
+      apt: name=checkinstall
+           state=present
+
+    - name: install libreadline-gplv2-dev
+      become: yes
+      apt: name=libreadline-gplv2-dev
+           state=present
+
+    - name: install libncursesw5-dev
+      become: yes
+      apt: name=libncursesw5-dev
+           state=present
+
+    - name: install tk-dev
+      become: yes
+      apt: name=tk-dev
+           state=present
+
+    - name: install libgdbm-dev
+      become: yes
+      apt: name=libgdbm-dev
+           state=present
+
+    - name: install libc6-dev
+      become: yes
+      apt: name=libc6-dev
+           state=present
+
     - name: install packages gcc  
       become: yes
-      apt: name=gcc
+      apt: name=gcc state=present
 
     - name: install packages make  
       become: yes
-      apt: name=make
+      apt: name=make state=present
 
     - name: install packages openssl  
       become: yes
-      apt: name=openssl
-
-    - name: install packages libreadline-dev  
-      become: yes          
-      apt: name=libreadline-dev install_recommends=yes autoremove=yes
+      apt: name=openssl state=present
 
     - name: install packages libsqlite3-dev  
       become: yes          
-      apt: name=libsqlite3-dev install_recommends=yes autoremove=yes
+      apt: name=libsqlite3-dev install_recommends=yes autoremove=yes state=present
 
     - name: install packages libbz2-dev
       become: yes          
@@ -43,70 +77,27 @@
       become: yes
       apt: name=libssl-dev install_recommends=yes autoremove=yes
 
-    - name: check git clone is done
-      stat: path=/usr/local/pyenv
-      register: penv
-
-    - name: git clone pyenv
-      become: yes
-      git:
-        repo: git://github.com/yyuu/pyenv.git
-        dest: /usr/local/pyenv
-      when: not penv.stat.exists
-
-    - name: check git clone is done
-      stat: path=/usr/local/pyenv/plugins/virtualenv
-      register: pvirtualenv
-
-    - name: git clone virtualenv
-      become: yes
-      git:
-        repo: git://github.com/yyuu/pyenv-virtualenv.git
-        dest: /usr/local/pyenv/plugins/virtualenv
-      when: not pvirtualenv.stat.exists
-
     - name: add bash_profile to vagrant
       file: path=/home/vagrant/.bash_profile state=touch
 
-    - name: add pyenv root PATH to vagrant
-      lineinfile:
-        dest=/home/vagrant/.bash_profile
-        regexp=^export.PYENV_ROOT
-        line="export PYENV_ROOT=/usr/local/pyenv"
-
-    - name: add pyenv PATH to vagrant
-      lineinfile:
-        dest=/home/vagrant/.bash_profile
-        regexp=^export.PATH
-        line="export PATH=/usr/local/pyenv/shims:/usr/local/pyenv/bin:$PATH:"
-
-    - name: source
-      become_user: vagrant
-      shell: source /home/vagrant/.bash_profile
-      args:
-        executable: /bin/bash
-
-    - name: add permission
+    - name: Install Python
+      apt:
+        name: python2.7=2.7.14-2ubuntu1~16.04.york0
+        state: present
       become: yes
-      file: path=/usr/local/pyenv owner=root mode=755 recurse=yes
+      notify: installed_python
 
-    - name: check direcoty
-      stat: path=/usr/local/pyenv/versions/3.4.2
-      register: py342
-
-    - name: python3 install
+  handlers:
+    - name: Download pip installer
+      get_url:
+        url: https://bootstrap.pypa.io/get-pip.py
+        dest: /usr/src/
       become: yes
-      command: /usr/local/pyenv/bin/pyenv install -v 3.4.2
-      when: not py342.stat.exists
-    
-    - name: check directory
-      stat: path=/usr/local/pyenv/versions/2.7.13
-      register: py2713
+      listen: installed_python
 
-    - name: python2 install
+    - name: install pip
+      command: python /usr/src/get-pip.py
       become: yes
-      command: /usr/local/pyenv/bin/pyenv install -v 2.7.13
-      when: not py2713.stat.exists
+      listen: installed_python
 
-    - name: set python version
-      command: /usr/local/pyenv/bin/pyenv global 2.7.13
+- import_playbook: ./pip.yml
