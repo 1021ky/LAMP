@@ -39,11 +39,12 @@
 
     - name: create mysql database
       mysql_db: name={{ mysql_database }} state=present
+      
     - name: create mysql user
       mysql_user: name={{ mysql_user }} host={{ item }} password={{ mysql_password }} priv={{ mysql_database }}.*:ALL,GRANT state=present
       with_items:
         - localhost
-        - 192.168.20.11
+        - 192.168.20.10
     # - name: Import file.sql similar to mysql -u <username> -p <password> < hostname.sql
     #   mysql_db:
     #   state: import
