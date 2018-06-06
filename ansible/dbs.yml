@@ -53,5 +53,5 @@
       mysql_db:
         state: import
         name: all
-        target: /vagrant/dbs/create.sql
+        target: /vagrant/dbs/sample_db.sql
         
