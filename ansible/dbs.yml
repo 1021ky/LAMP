@@ -29,7 +29,7 @@
 
     # - name: set conf file
     #   mysql_variables:
-    #     config_file: /home/vagrant/dbs/my.cnf
+    #     config_file: /vagrant/dbs/my.cnf
 
     - name: Start the MySQL service
       become: yes
