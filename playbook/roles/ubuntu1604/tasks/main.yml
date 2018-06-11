@@ -1,0 +1,6 @@
+---
+- name: add apt repository for installation mysql
+  apt_repository:
+    repo: deb http://archive.ubuntu.com/ubuntu trusty universe
+    state: present
+    update_cache: yes

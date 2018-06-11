@@ -1,0 +1,14 @@
+---
+- name: install apache
+  apt: 
+    name: apache2
+    state: present 
+    
+- name: install apache2 depends packages
+  apt: 
+    name: "{{ item }}"
+    state: present 
+  with_items:
+    - apache2-utils
+    - libexpat1
+    - ssl-cert

@@ -20,7 +20,6 @@ Vagrant.configure("2") do |config|
     machine.vm.hostname = "web1"
     machine.vm.synced_folder "./www", "/var/www/html"
     machine.vm.synced_folder "./log", "/vagrant/log"
-    machine.vm.synced_folder "./guest_config_file/webservers/apacheconf", "/vagrant/conf"    
     
     machine.vm.network :private_network, ip:"192.168.20.10"
     machine.vm.network "forwarded_port", guest: 80, host: 8080
@@ -36,7 +35,6 @@ Vagrant.configure("2") do |config|
     SHELL
 
     machine.vm.hostname = "db1"
-    machine.vm.synced_folder "./guest_config_file/dbs", "/vagrant/dbs"
 
     machine.vm.network :private_network, ip:"192.168.20.11"
     machine.vm.network "forwarded_port", guest: 3606, host: 3606  
@@ -49,16 +47,14 @@ Vagrant.configure("2") do |config|
   # TODO 完成後 , autostart: falseを入れておく。一度だけ立ててprovisioningすればよいので。
   config.vm.define "controller" do |machine|
     machine.vm.network "private_network", ip: "192.168.20.100"
-    machine.vm.synced_folder "./guest_config_file/webservers/apacheconf", "/vagrant/conf"    
-    machine.vm.synced_folder "./guest_config_file/dbs/", "/vagrant/dbs"
+    machine.vm.synced_folder "./playbook/roles", "/vagrant/playbook/roles"    
     
     machine.vm.provision :ansible_local do |ansible|
-      ansible.inventory_path = "ansible/inventory/hosts"
-      ansible.playbook       = "ansible/playbook.yml"
-      ansible.config_file    = "ansible/ansible.cfg"
+      ansible.inventory_path = "playbook/inventory/hosts"
+      ansible.playbook       = "playbook/playbook.yml"
+      ansible.config_file    = "playbook/ansible.cfg"
       ansible.install_mode   = :pip
       ansible.version        = "2.4.0.0" # needs to set install_mode :pip
-      # ansible.compatibility_mode = "auto" # can use in vagrant 2.0
       ansible.verbose        = true
       ansible.limit          = "all" # or group
     end

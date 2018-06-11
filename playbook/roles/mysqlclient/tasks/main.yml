@@ -1,0 +1,12 @@
+---
+- name: add apt repository for installation mysql client
+  apt_repository:
+    repo: deb http://archive.ubuntu.com/ubuntu trusty universe
+    state: present
+    update_cache: yes
+      
+- name: install MySQL packages
+  apt: name={{ item }} state=installed update_cache=yes
+  with_items:
+    - mysql-client-5.6
+    - python-mysqldb
