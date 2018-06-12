@@ -19,7 +19,7 @@ Vagrant.configure("2") do |config|
 
     machine.vm.hostname = "web1"
     machine.vm.synced_folder "./www", "/var/www/html"
-    machine.vm.synced_folder "./log", "/vagrant/log"
+    machine.vm.synced_folder "./log", "/vagrant/log", create: true
     
     machine.vm.network :private_network, ip:"192.168.20.10"
     machine.vm.network "forwarded_port", guest: 80, host: 8080
@@ -47,8 +47,7 @@ Vagrant.configure("2") do |config|
   # TODO 完成後 , autostart: falseを入れておく。一度だけ立ててprovisioningすればよいので。
   config.vm.define "controller" do |machine|
     machine.vm.network "private_network", ip: "192.168.20.100"
-    machine.vm.synced_folder "./playbook/roles", "/vagrant/playbook/roles"    
-    
+    machine.vm.synced_folder "./playbook", "/vagrant/playbook",  mount_options: ['dmode=744','fmode=744']
     machine.vm.provision :ansible_local do |ansible|
       ansible.inventory_path = "playbook/inventory/hosts"
       ansible.playbook       = "playbook/playbook.yml"
