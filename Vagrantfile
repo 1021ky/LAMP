@@ -10,14 +10,14 @@ Vagrant.configure("2") do |config|
     config.proxy.no_proxy = "localhost,127.0.0.1"
   end
 
-
-  # TODO: try nfs sync for windows
   config.vm.define "web1" do |machine|
     machine.vm.provision "shell", inline: <<-SHELL
       apt install -y -qq python
     SHELL
 
     machine.vm.hostname = "web1"
+
+    # TODO: try rsync for windows except log folder.(before trying, you should install rsync tool such as Cygwin, MinGW)
     machine.vm.synced_folder "./www", "/var/www/html"
     machine.vm.synced_folder "./log", "/vagrant/log", create: true
     
@@ -47,7 +47,8 @@ Vagrant.configure("2") do |config|
   # TODO 完成後 , autostart: falseを入れておく。一度だけ立ててprovisioningすればよいので。
   config.vm.define "controller" do |machine|
     machine.vm.network "private_network", ip: "192.168.20.100"
-    machine.vm.synced_folder "./playbook", "/vagrant/playbook",  mount_options: ['dmode=744','fmode=744']
+    # 秘密鍵はvagrantユーザー以外は読めないように権限を設定
+    machine.vm.synced_folder ".", "/vagrant",  mount_options: ['dmode=700','fmode=700']
     machine.vm.provision :ansible_local do |ansible|
       ansible.inventory_path = "playbook/inventory/hosts"
       ansible.playbook       = "playbook/playbook.yml"
