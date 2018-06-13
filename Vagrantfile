@@ -1,5 +1,6 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
+require 'rbconfig'
 
 Vagrant.configure("2") do |config|
   config.vm.box="ubuntu/xenial64"
@@ -10,6 +11,12 @@ Vagrant.configure("2") do |config|
     config.proxy.no_proxy = "localhost,127.0.0.1"
   end
 
+  if RbConfig::CONFIG['host_os'] =~ /mswin|msys|mingw|cygwin|bccwin|wince|emc/
+    if `rsync --help` != ""
+      STDERR.puts "[WARNING] you must install rsync on Cygwin, MinGW or Bash On Ubuntu On Windows "
+    end
+  end
+  
   config.vm.define "web1" do |machine|
     machine.vm.provision "shell", inline: <<-SHELL
       apt install -y -qq python
@@ -17,8 +24,7 @@ Vagrant.configure("2") do |config|
 
     machine.vm.hostname = "web1"
 
-    # TODO: try rsync for windows except log folder.(before trying, you should install rsync tool such as Cygwin, MinGW)
-    machine.vm.synced_folder "./www", "/var/www/html"
+    machine.vm.synced_folder "./www", "/var/www/html", type: "rsync", rsync__exclude: ".git/", rsync__auto: true
     machine.vm.synced_folder "./log", "/vagrant/log", create: true
     
     machine.vm.network :private_network, ip:"192.168.20.10"
