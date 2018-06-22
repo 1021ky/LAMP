@@ -1,12 +1,15 @@
 # LAMPython2
 
-set up LAMP environment easyly
+## About this tool
+
+This tool can set up LAMP environment easyly.
+
 - L: Ubuntu16.04
 - A: Apache2
 - M: Mysql5.6
 - P: Python2
 
-## prerequisites
+## Prerequisites
 
 you need to install following software.
 
@@ -17,9 +20,9 @@ you need to install following software.
 In addition to the above, you need to install vagrant plugin 'vagrant-proxyconf' on proxy network environment.
 In addition to the above, you need to install rsync on Cygwin, MinGW or Bash On Ubuntu On Windows on windows.
 
-## how to run
+## How to run
 
-### at first 
+### At first 
 
 run following commands.
 
@@ -27,13 +30,14 @@ run following commands.
 
 You may skip those commands. But it takes much time to run `vagrant up` at first or after running `vagrant destory`.
 
-### usual
+### Usual use
 
 run following commands.
 
 * `vagrant up`
+* `vagrant rsync-auto` &
 
-### shutdown
+### After use
 
 run following commands.
 
