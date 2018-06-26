@@ -17,7 +17,7 @@ Vagrant.configure("2") do |config|
     end
   end
   
-  config.vm.define "web1" do |machine|
+  config.vm.define "web1", primary: true do |machine|
     machine.vm.provision "shell", inline: <<-SHELL
       apt install -y -qq python
     SHELL
