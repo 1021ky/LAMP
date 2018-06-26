@@ -111,3 +111,6 @@ ENV/
 
 # ubuntu log
 ubuntu.*.log
+
+# www
+www/
