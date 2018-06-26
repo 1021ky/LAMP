@@ -50,10 +50,10 @@ Vagrant.configure("2") do |config|
     end
   end
 
-  # TODO 完成後 , autostart: falseを入れておく。一度だけ立ててprovisioningすればよいので。
-  config.vm.define "controller" do |machine|
+  # once you do provisioning, you may change 'autostart' to false.
+  config.vm.define "controller", autostart: true do |machine|
     machine.vm.network "private_network", ip: "192.168.20.100"
-    # 秘密鍵はvagrantユーザー以外は読めないように権限を設定
+    # set file permissions so that only owner user can read the ssh private key.
     machine.vm.synced_folder ".", "/vagrant",  mount_options: ['dmode=700','fmode=700']
     machine.vm.provision :ansible_local do |ansible|
       ansible.inventory_path = "playbook/inventory/hosts"
