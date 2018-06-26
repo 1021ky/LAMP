@@ -100,6 +100,12 @@
     name: python2.7=2.7.14-2ubuntu1~16.04.york0
     state: present
 
+- name: install Python-dev
+  become: yes
+  apt:
+    name: python-dev
+    state: present
+
 # install pip
 - name: Download pip installer
   get_url:
