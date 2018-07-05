@@ -15,7 +15,7 @@
     dest: /etc/mysql/my.cnf
     owner: root
     group: root
-    mode: 0777
+    mode: 0644
 
 - name: Start the MySQL service
   become: yes
